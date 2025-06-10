@@ -20,7 +20,7 @@ import java.util.List;
 @Tag(name = "Items", description = "Operations related to waste items")
 @RestController
 @RequestMapping("/api/items")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @Validated
 public class ItemController {
 
