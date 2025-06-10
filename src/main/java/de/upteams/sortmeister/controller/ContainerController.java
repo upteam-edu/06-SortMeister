@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Containers", description = "Operations related to waste containers")
 @RestController
 @RequestMapping("/api/containers")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:5173")
 @Validated
 public class ContainerController {
 
