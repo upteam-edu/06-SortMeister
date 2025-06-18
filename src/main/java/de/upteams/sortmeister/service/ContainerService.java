@@ -1,11 +1,9 @@
 package de.upteams.sortmeister.service;
 
-import de.upteams.sortmeister.dto.ContainerDto;
-import de.upteams.sortmeister.dto.ItemResult;
+import de.upteams.sortmeister.exception.ContainerValidationException;
+import de.upteams.sortmeister.exception.ErrorMessages;
 import de.upteams.sortmeister.model.Container;
-import de.upteams.sortmeister.model.Item;
 import de.upteams.sortmeister.repository.ContainerRepository;
-import de.upteams.sortmeister.repository.InMemoryContainerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,15 +26,39 @@ public class ContainerService {
     }
 
     public Container create(Container container) {
+        validateUniqueNameAndColor(container, null);
         return repository.save(container);
     }
 
     public Container update(Long id, Container container) {
+        repository.findById(id)
+                .orElseThrow(() -> new ContainerValidationException(
+                        String.format(ErrorMessages.NOT_FOUND, id)
+                ));
+        validateUniqueNameAndColor(container, id);
         container.setId(id);
         return repository.save(container);
     }
 
     public void delete(Long id) {
         repository.deleteById(id);
+    }
+
+    private void validateUniqueNameAndColor(Container container, Long excludedId) {
+        repository.findByName(container.getName())
+                .filter(c -> excludedId == null || !c.getId().equals(excludedId))
+                .ifPresent(c -> {
+                    throw new ContainerValidationException(
+                            String.format(ErrorMessages.NAME_EXISTS, container.getName())
+                    );
+                });
+
+        repository.findByColor(container.getColor())
+                .filter(c -> excludedId == null || !c.getId().equals(excludedId))
+                .ifPresent(c -> {
+                    throw new ContainerValidationException(
+                            String.format(ErrorMessages.COLOR_EXISTS, container.getColor())
+                    );
+                });
     }
 }
