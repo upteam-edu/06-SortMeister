@@ -1,5 +1,6 @@
 package de.upteams.sortmeister.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.upteams.sortmeister.model.Container;
 import org.springframework.stereotype.Repository;
 
@@ -37,5 +38,21 @@ public class InMemoryContainerRepository implements ContainerRepository {
     @Override
     public void deleteById(Long id) {
         map.remove(id);
+    }
+
+    @Override
+    public Optional<Container> findByName(String name) {
+        // Ищем контейнер по имени, игнорируя регистр
+        return map.values().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(name))
+                .findFirst(); // Возвращаем первый найденный или Optional.empty()
+    }
+
+    @Override
+    public Optional<Container> findByColor(String color) {
+        // Ищем контейнер по цвету, игнорируя регистр
+        return map.values().stream()
+                .filter(c -> c.getColor().equalsIgnoreCase(color))
+                .findFirst(); // Возвращаем первый найденный или Optional.empty()
     }
 }
