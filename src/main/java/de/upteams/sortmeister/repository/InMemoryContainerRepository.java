@@ -1,5 +1,6 @@
 package de.upteams.sortmeister.repository;
 
+import de.upteams.sortmeister.dto.exception.ContainerAlreadyExistException;
 import de.upteams.sortmeister.model.Container;
 import org.springframework.stereotype.Repository;
 
@@ -27,12 +28,28 @@ public class InMemoryContainerRepository implements ContainerRepository {
 
     @Override
     public Container save(Container container) {
+        boolean nameExists = map.values()
+                .stream()
+                .anyMatch(c -> c.getName().equalsIgnoreCase(container.getName()));
+        boolean colorExists = map.values()
+                .stream()
+                .anyMatch(c -> c.getColor().equalsIgnoreCase(container.getColor()));
+
+        if (nameExists) {
+            throw new ContainerAlreadyExistException("Name exists");
+        }
+
+        if (colorExists) {
+            throw new ContainerAlreadyExistException("Color exists");
+        }
+
         if (container.getId() == null) {
             container.setId(idGen.getAndIncrement());
         }
         map.put(container.getId(), container);
         return container;
     }
+
 
     @Override
     public void deleteById(Long id) {
