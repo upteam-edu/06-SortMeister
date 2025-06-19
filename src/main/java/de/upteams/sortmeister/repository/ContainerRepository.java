@@ -10,4 +10,8 @@ public interface ContainerRepository {
     Optional<Container> findById(Long id);
     Container save(Container container);
     void deleteById(Long id);
+
+    boolean existsByColor(String color);
+
+    boolean existsByName(String name);
 }
