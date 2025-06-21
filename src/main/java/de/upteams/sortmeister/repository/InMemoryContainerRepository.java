@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class InMemoryContainerRepository implements ContainerRepository {
+
     private final Map<Long, Container> map = new ConcurrentHashMap<>();
     private final AtomicLong idGen = new AtomicLong(1);
 
@@ -23,6 +24,20 @@ public class InMemoryContainerRepository implements ContainerRepository {
     @Override
     public Optional<Container> findById(Long id) {
         return Optional.ofNullable(map.get(id));
+    }
+
+    @Override
+    public Optional<Container> findByName(String name) {
+        return map.values().stream()
+                .filter(container -> container.getName().equals(name))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Container> findByColor(String color) {
+        return map.values().stream()
+                .filter(container -> container.getColor().equals(color))
+                .findFirst();
     }
 
     @Override
