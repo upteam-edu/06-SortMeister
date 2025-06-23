@@ -38,4 +38,14 @@ public class InMemoryContainerRepository implements ContainerRepository {
     public void deleteById(Long id) {
         map.remove(id);
     }
+
+    @Override
+    public boolean existsByNameIgnoreCase(String name) {
+        return map.values().stream().anyMatch(container -> container.getName().equalsIgnoreCase(name));
+    }
+
+    @Override
+    public boolean existsByColorIgnoreCase(String color) {
+        return map.values().stream().anyMatch(container -> container.getColor().equalsIgnoreCase(color));
+    }
 }
