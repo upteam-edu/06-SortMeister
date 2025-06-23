@@ -1,5 +1,7 @@
 package de.upteams.sortmeister.service;
 
+import de.upteams.sortmeister.DuplicateContainerColorException;
+import de.upteams.sortmeister.DuplicateContainerNameException;
 import de.upteams.sortmeister.dto.ContainerDto;
 import de.upteams.sortmeister.dto.ItemResult;
 import de.upteams.sortmeister.model.Container;
@@ -28,6 +30,15 @@ public class ContainerService {
     }
 
     public Container create(Container container) {
+        Optional<Container> existingByName = repository.findByName(container.getName());
+        if (existingByName.isPresent()) {
+            throw new DuplicateContainerNameException("Container with this name already exists ");
+        }
+
+        Optional<Container> existByColor = repository.findByColor(container.getColor());
+        if (existByColor.isPresent()) {
+            throw new DuplicateContainerColorException("Container with this color already exists ");
+        }
         return repository.save(container);
     }
 
