@@ -13,8 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class InMemoryContainerRepository implements ContainerRepository {
+
     private final Map<Long, Container> map = new ConcurrentHashMap<>();
     private final AtomicLong idGen = new AtomicLong(1);
+
+    public InMemoryContainerRepository() {}
 
     @Override
     public List<Container> findAll() {
@@ -42,17 +45,17 @@ public class InMemoryContainerRepository implements ContainerRepository {
 
     @Override
     public Optional<Container> findByName(String name) {
-        // Ищем контейнер по имени, игнорируя регистр
+
         return map.values().stream()
                 .filter(c -> c.getName().equalsIgnoreCase(name))
-                .findFirst(); // Возвращаем первый найденный или Optional.empty()
+                .findFirst();
     }
 
     @Override
     public Optional<Container> findByColor(String color) {
-        // Ищем контейнер по цвету, игнорируя регистр
+
         return map.values().stream()
                 .filter(c -> c.getColor().equalsIgnoreCase(color))
-                .findFirst(); // Возвращаем первый найденный или Optional.empty()
+                .findFirst();
     }
 }

@@ -16,16 +16,7 @@ public class InMemoryItemRepository implements ItemRepository {
     private final Map<Long, Item> map = new ConcurrentHashMap<>();
     private final AtomicLong idGen = new AtomicLong(1);
 
-    public InMemoryItemRepository() {
-
-        save(new Item("Бутылка пластиковая", 1L));
-        save(new Item("Старая газета", 2L));
-        save(new Item("Стеклянная банка", 1L));
-        save(new Item("Картонная коробка", 3L));
-        save(new Item("Батарейки", null));
-    }
-
-    @Override
+@Override
     public List<Item> findAll() {
         return new ArrayList<>(map.values());
     }

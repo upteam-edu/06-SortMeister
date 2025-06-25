@@ -27,32 +27,32 @@ public class DataLoader implements CommandLineRunner {
 
         // Predefined items
         // Glass items
-        itemService.create(new Item("glass bottle", glass.getId()));
-        itemService.create(new Item("glass jar", glass.getId()));
-        itemService.create(new Item("colored glass", glass.getId()));
-        itemService.create(new Item("clear glass", glass.getId()));
-        itemService.create(new Item("glass packaging", glass.getId()));
-        itemService.create(new Item("wine glass", glass.getId()));
-        itemService.create(new Item("glass cup", glass.getId()));
-        itemService.create(new Item("glass window pane", glass.getId()));
+        itemService.create(new Item("glass bottle", glass));
+        itemService.create(new Item("glass jar", glass));
+        itemService.create(new Item("colored glass", glass));
+        itemService.create(new Item("clear glass", glass));
+        itemService.create(new Item("glass packaging", glass));
+        itemService.create(new Item("wine glass", glass));
+        itemService.create(new Item("glass cup", glass));
+        itemService.create(new Item("glass window pane", glass));
 
         // Paper items
-        itemService.create(new Item("newspaper", paper.getId()));
-        itemService.create(new Item("magazine", paper.getId()));
-        itemService.create(new Item("cardboard packaging", paper.getId()));
-        itemService.create(new Item("white paper", paper.getId()));
-        itemService.create(new Item("paper envelope", paper.getId()));
-        itemService.create(new Item("office paper", paper.getId()));
-        itemService.create(new Item("paper notebook", paper.getId()));
+        itemService.create(new Item("newspaper", paper));
+        itemService.create(new Item("magazine", paper));
+        itemService.create(new Item("cardboard packaging", paper));
+        itemService.create(new Item("white paper", paper));
+        itemService.create(new Item("paper envelope", paper));
+        itemService.create(new Item("office paper", paper));
+        itemService.create(new Item("paper notebook", paper));
 
         // Plastic items
-        itemService.create(new Item("plastic bottle", plastic.getId()));
-        itemService.create(new Item("PET packaging", plastic.getId()));
-        itemService.create(new Item("plastic bag", plastic.getId()));
-        itemService.create(new Item("plastic container", plastic.getId()));
-        itemService.create(new Item("plastic lid", plastic.getId()));
-        itemService.create(new Item("yogurt cup", plastic.getId()));
-        itemService.create(new Item("food wrap", plastic.getId()));
-        itemService.create(new Item("plastic film", plastic.getId()));
+        itemService.create(new Item("plastic bottle", plastic));
+        itemService.create(new Item("PET packaging", plastic));
+        itemService.create(new Item("plastic bag", plastic));
+        itemService.create(new Item("plastic container", plastic));
+        itemService.create(new Item("plastic lid", plastic));
+        itemService.create(new Item("yogurt cup", plastic));
+        itemService.create(new Item("food wrap", plastic));
+        itemService.create(new Item("plastic film", plastic));
     }
 }

@@ -30,10 +30,10 @@ public class ContainerService {
 
     public Container create(Container container) {
         if (repository.findByName(container.getName()).isPresent()) {
-            throw new IllegalArgumentException("Контейнер с именем '" + container.getName() + "' уже существует.");
+            throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
         }
         if (repository.findByColor(container.getColor()).isPresent()) {
-            throw new IllegalArgumentException("Контейнер с цветом '" + container.getColor() + "' уже существует.");
+            throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
         }
         return repository.save(container);
     }
@@ -41,21 +41,20 @@ public class ContainerService {
     public Container update(Long id, Container container) {
         Optional<Container> existingContainerOptional = repository.findById(id);
         if (existingContainerOptional.isEmpty()) {
-            throw new IllegalArgumentException("Контейнер с ID " + id + " не найден.");
+            throw new IllegalArgumentException("Container with ID " + id + " не найден.");
         }
         Container existingContainer = existingContainerOptional.get();
 
-        // Проверяем имя, только если оно изменилось и не совпадает с другим контейнером
         if (!existingContainer.getName().equalsIgnoreCase(container.getName())) {
             if (repository.findByName(container.getName()).isPresent()) {
-                throw new IllegalArgumentException("Контейнер с именем '" + container.getName() + "' уже существует.");
+                throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
             }
         }
 
-        // Проверяем цвет, только если он изменился и не совпадает с другим контейнером
+
         if (!existingContainer.getColor().equalsIgnoreCase(container.getColor())) {
             if (repository.findByColor(container.getColor()).isPresent()) {
-                throw new IllegalArgumentException("Контейнер с цветом '" + container.getColor() + "' уже существует.");
+                throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
             }
         }
 

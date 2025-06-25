@@ -4,14 +4,14 @@ public class Item {
 
     private Long id;
     private String name;
-    private Long containerId;
+    private Container container;
 
     public Item() {
     }
 
-    public Item( String name, Long containerId) {
+    public Item(String name, Container container) {
         this.name = name;
-        this.containerId = containerId;
+        this.container = container;
     }
 
     public Long getId() {
@@ -30,11 +30,16 @@ public class Item {
         this.name = name;
     }
 
-    public Long getContainerId() {
-        return containerId;
+
+    public Container getContainer() {
+        return container;
     }
 
-    public void setContainerId(Long containerId) {
-        this.containerId = containerId;
+    public void setContainer(Container container) {
+        this.container = container;
     }
+
+
+
+
 }
