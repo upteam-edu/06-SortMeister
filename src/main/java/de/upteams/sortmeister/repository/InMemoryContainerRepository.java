@@ -26,6 +26,20 @@ public class InMemoryContainerRepository implements ContainerRepository {
     }
 
     @Override
+    public Optional<Container> findByName(String name) {
+        return map.values().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Container> findByColor(String color) {
+        return map.values().stream()
+                .filter(c -> c.getColor().equalsIgnoreCase(color))
+                .findFirst();
+    }
+
+    @Override
     public Container save(Container container) {
         if (container.getId() == null) {
             container.setId(idGen.getAndIncrement());

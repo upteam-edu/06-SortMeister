@@ -57,11 +57,14 @@ public class ContainerController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping
-    public ResponseEntity<ContainerDto> create(@Valid @RequestBody CreateContainerRequest req) {
-        Container c = service.create(new Container(req.name(), req.color(), req.description()));
-        return ResponseEntity.ok(new ContainerDto(c.getId(), c.getName(), c.getColor(), c.getDescription()));
+    public ResponseEntity<?> create(@Valid @RequestBody CreateContainerRequest req) {
+        try {
+            Container c = service.create(new Container(req.name(), req.color(), req.description()));
+            return ResponseEntity.ok(new ContainerDto(c.getId(), c.getName(), c.getColor(), c.getDescription()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
-
     @Operation(summary = "Update container", description = "Modify details of an existing waste container")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Container updated successfully"),
