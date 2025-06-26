@@ -27,11 +27,37 @@ public class ContainerService {
         return repository.findById(id);
     }
 
+
     public Container create(Container container) {
+        if (repository.findByName(container.getName()).isPresent()) {
+            throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
+        }
+        if (repository.findByColor(container.getColor()).isPresent()) {
+            throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
+        }
         return repository.save(container);
     }
 
     public Container update(Long id, Container container) {
+        Optional<Container> existingContainerOptional = repository.findById(id);
+        if (existingContainerOptional.isEmpty()) {
+            throw new IllegalArgumentException("Container with ID " + id + " не найден.");
+        }
+        Container existingContainer = existingContainerOptional.get();
+
+        if (!existingContainer.getName().equalsIgnoreCase(container.getName())) {
+            if (repository.findByName(container.getName()).isPresent()) {
+                throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
+            }
+        }
+
+
+        if (!existingContainer.getColor().equalsIgnoreCase(container.getColor())) {
+            if (repository.findByColor(container.getColor()).isPresent()) {
+                throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
+            }
+        }
+
         container.setId(id);
         return repository.save(container);
     }

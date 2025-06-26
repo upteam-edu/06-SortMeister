@@ -10,4 +10,7 @@ public interface ContainerRepository {
     Optional<Container> findById(Long id);
     Container save(Container container);
     void deleteById(Long id);
+
+    Optional<Container> findByName(String name);
+    Optional<Container> findByColor(String color);
 }

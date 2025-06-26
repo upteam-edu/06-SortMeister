@@ -16,7 +16,7 @@ public class InMemoryItemRepository implements ItemRepository {
     private final Map<Long, Item> map = new ConcurrentHashMap<>();
     private final AtomicLong idGen = new AtomicLong(1);
 
-    @Override
+@Override
     public List<Item> findAll() {
         return new ArrayList<>(map.values());
     }

@@ -1,5 +1,6 @@
 package de.upteams.sortmeister.repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import de.upteams.sortmeister.model.Container;
 import org.springframework.stereotype.Repository;
 
@@ -12,8 +13,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class InMemoryContainerRepository implements ContainerRepository {
+
     private final Map<Long, Container> map = new ConcurrentHashMap<>();
     private final AtomicLong idGen = new AtomicLong(1);
+
+    public InMemoryContainerRepository() {}
 
     @Override
     public List<Container> findAll() {
@@ -37,5 +41,21 @@ public class InMemoryContainerRepository implements ContainerRepository {
     @Override
     public void deleteById(Long id) {
         map.remove(id);
+    }
+
+    @Override
+    public Optional<Container> findByName(String name) {
+
+        return map.values().stream()
+                .filter(c -> c.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Container> findByColor(String color) {
+
+        return map.values().stream()
+                .filter(c -> c.getColor().equalsIgnoreCase(color))
+                .findFirst();
     }
 }
