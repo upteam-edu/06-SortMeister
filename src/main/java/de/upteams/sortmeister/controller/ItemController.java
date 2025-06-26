@@ -1,9 +1,6 @@
 package de.upteams.sortmeister.controller;
 
-import de.upteams.sortmeister.dto.CreateItemRequest;
-import de.upteams.sortmeister.dto.ItemDto;
-import de.upteams.sortmeister.dto.ItemResult;
-import de.upteams.sortmeister.dto.UpdateItemRequest;
+import de.upteams.sortmeister.dto.*;
 import de.upteams.sortmeister.model.Item;
 import de.upteams.sortmeister.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import de.upteams.sortmeister.dto.ExtendedItemDto;
+
 
 import java.util.List;
 
@@ -56,6 +55,11 @@ public class ItemController {
         return service.getById(id)
                 .map(i -> ResponseEntity.ok(new ItemDto(i.getId(), i.getName(), i.getContainerId())))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/extended/{id}")
+    public ResponseEntity<ExtendedItemDto> getExtendedItem(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getExtendedItemById(id));
     }
 
     @Operation(summary = "Create new item", description = "Add a new waste item to the system")

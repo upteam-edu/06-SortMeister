@@ -1,12 +1,13 @@
 package de.upteams.sortmeister.service;
 
 import de.upteams.sortmeister.dto.ContainerDto;
+import de.upteams.sortmeister.dto.ExtendedItemDto;
 import de.upteams.sortmeister.dto.ItemResult;
 import de.upteams.sortmeister.model.Container;
 import de.upteams.sortmeister.model.Item;
-import de.upteams.sortmeister.repository.InMemoryItemRepository;
 import de.upteams.sortmeister.repository.ItemRepository;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +29,24 @@ public class ItemService {
 
     public Optional<Item> getById(Long id) {
         return repository.findById(id);
+    }
+
+    public ExtendedItemDto getExtendedItemById(Long id) {
+        Item item = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        Container container = containerService.getById(item.getContainerId())
+                .orElseThrow(() -> new RuntimeException("Container not found"));
+
+        return ExtendedItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .container(ExtendedItemDto.ContainerDto.builder()
+                        .id(container.getId())
+                        .name(container.getName())
+                        .color(container.getColor())
+                        .build())
+                .build();
     }
 
     public List<Item> search(String name) {
