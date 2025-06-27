@@ -9,10 +9,10 @@ public class Advert {
     public Advert() {
     }
 
-    public Advert(String title, String description, String photo) {
-        this.title = title;
+    public Advert(String description, String photo, String title) {
         this.description = description;
         this.photo = photo;
+        this.title = title;
     }
 
     public String getDescription() {
