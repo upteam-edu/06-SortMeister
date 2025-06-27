@@ -32,10 +32,8 @@ public class ItemService {
 
     public ExtendedItemDto getExtendedItemById(Long id) {
         Item item =repository.findById(id).orElseThrow();
-        ContainerDto container = containerService.getById(item.getContainerId()).map( c ->{
-          return  new ContainerDto(c.getId(), c.getName(), c.getColor(),c.getDescription());
-        }).orElseThrow();
-
+        ContainerDto container = containerService.getById(item.getContainerId()).map( c ->
+         new ContainerDto(c.getId(), c.getName(), c.getColor(),c.getDescription())).orElseThrow();
         return new ExtendedItemDto(item.getId(), item.getName(), container);
     }
 
