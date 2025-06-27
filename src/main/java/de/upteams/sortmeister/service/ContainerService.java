@@ -28,6 +28,14 @@ public class ContainerService {
     }
 
     public Container create(Container container) {
+        for (Container existing : repository.findAll()) {
+            if (existing.getName().equalsIgnoreCase(container.getName())) {
+                throw new IllegalArgumentException("Container with this name already exists");
+            }
+            if (existing.getColor().equalsIgnoreCase(container.getColor())) {
+                throw new IllegalArgumentException("Container with this color already exists");
+            }
+        }
         return repository.save(container);
     }
 
