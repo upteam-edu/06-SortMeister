@@ -1,11 +1,7 @@
 package de.upteams.sortmeister.service;
 
-import de.upteams.sortmeister.dto.ContainerDto;
-import de.upteams.sortmeister.dto.ItemResult;
 import de.upteams.sortmeister.model.Container;
-import de.upteams.sortmeister.model.Item;
 import de.upteams.sortmeister.repository.ContainerRepository;
-import de.upteams.sortmeister.repository.InMemoryContainerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +24,17 @@ public class ContainerService {
     }
 
     public Container create(Container container) {
+        String name = container.getName();
+        String color = container.getColor();
+
+        if (repository.existsByName(name)) {
+            throw new IllegalArgumentException("Container with this name already exists.");
+        }
+
+        if (repository.existsByColor(color)) {
+            throw new IllegalArgumentException("Container with this color already exists.");
+        }
+
         return repository.save(container);
     }
 
