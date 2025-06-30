@@ -16,6 +16,10 @@ public class AdvertService {
         return new ArrayList<>(adverts.values());
     }
 
+    public Optional<AdvertDto> findById(Long id) {
+        return Optional.ofNullable(adverts.get(id));
+    }
+
     public AdvertDto create(CreateAdvertRequest request) {
         Long id = idGenerator.getAndIncrement();
         AdvertDto advert = new AdvertDto(id, request.getTitle(), request.getDescription(), request.getPhoto());

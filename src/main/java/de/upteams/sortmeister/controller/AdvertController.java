@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/advert")
+@RequestMapping("/api/advert")
 @RequiredArgsConstructor
 public class AdvertController {
 
@@ -20,6 +20,13 @@ public class AdvertController {
     @GetMapping
     public List<AdvertDto> getAll() {
         return advertService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AdvertDto> getById(@PathVariable Long id) {
+        return advertService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
