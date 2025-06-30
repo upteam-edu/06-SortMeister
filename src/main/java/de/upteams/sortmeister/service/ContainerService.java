@@ -1,68 +1,44 @@
 package de.upteams.sortmeister.service;
 
-import de.upteams.sortmeister.dto.ContainerDto;
-import de.upteams.sortmeister.dto.ItemResult;
 import de.upteams.sortmeister.model.Container;
-import de.upteams.sortmeister.model.Item;
 import de.upteams.sortmeister.repository.ContainerRepository;
-import de.upteams.sortmeister.repository.InMemoryContainerRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ContainerService {
-    private final ContainerRepository repository;
 
-    public ContainerService(ContainerRepository repository) {
-        this.repository = repository;
+    private final ContainerRepository containerRepository;
+
+    public ContainerService(ContainerRepository containerRepository) {
+        this.containerRepository = containerRepository;
     }
 
     public List<Container> getAll() {
-        return repository.findAll();
+        return containerRepository.findAll();
     }
 
-    public Optional<Container> getById(Long id) {
-        return repository.findById(id);
+    public Optional<Container> getContainerById(Long id) {
+        return containerRepository.findById(id);
     }
 
-
-    public Container create(Container container) {
-        if (repository.findByName(container.getName()).isPresent()) {
-            throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
-        }
-        if (repository.findByColor(container.getColor()).isPresent()) {
-            throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
-        }
-        return repository.save(container);
+    public Container createContainer(Container container) {
+        return containerRepository.save(container);
     }
 
-    public Container update(Long id, Container container) {
-        Optional<Container> existingContainerOptional = repository.findById(id);
-        if (existingContainerOptional.isEmpty()) {
-            throw new IllegalArgumentException("Container with ID " + id + " не найден.");
-        }
-        Container existingContainer = existingContainerOptional.get();
-
-        if (!existingContainer.getName().equalsIgnoreCase(container.getName())) {
-            if (repository.findByName(container.getName()).isPresent()) {
-                throw new IllegalArgumentException("Container with the name '" + container.getName() + "' it already exists.");
-            }
-        }
-
-
-        if (!existingContainer.getColor().equalsIgnoreCase(container.getColor())) {
-            if (repository.findByColor(container.getColor()).isPresent()) {
-                throw new IllegalArgumentException("Container with color '" + container.getColor() + "' it already exists.");
-            }
-        }
-
-        container.setId(id);
-        return repository.save(container);
+    public Container updateContainer(Long id, Container updatedContainer) {
+        return containerRepository.findById(id)
+                .map(container -> {
+                    container.setName(updatedContainer.getName());
+                    container.setColor(updatedContainer.getColor());
+                    container.setDescription(updatedContainer.getDescription());
+                    return containerRepository.save(container);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Container not found with id " + id));
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public void deleteContainer(Long id) {
+        containerRepository.deleteById(id);
     }
 }

@@ -1,12 +1,12 @@
 package de.upteams.sortmeister.service;
 
-import de.upteams.sortmeister.dto.ContainerDto;
-import de.upteams.sortmeister.dto.ItemResult;
+import de.upteams.sortmeister.dto.ItemDto;
 import de.upteams.sortmeister.model.Container;
 import de.upteams.sortmeister.model.Item;
+import de.upteams.sortmeister.repository.ContainerRepository;
 import de.upteams.sortmeister.repository.ItemRepository;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,54 +14,67 @@ import java.util.stream.Collectors;
 
 @Service
 public class ItemService {
-    private final ItemRepository repository;
-    private final ContainerService containerService;
 
-    public ItemService(ItemRepository repository, ContainerService containerService) {
-        this.repository = repository;
-        this.containerService = containerService;
+    private final ItemRepository itemRepository;
+    private final ContainerRepository containerRepository;
+
+    public ItemService(ItemRepository itemRepository, ContainerRepository containerRepository) {
+        this.itemRepository = itemRepository;
+        this.containerRepository = containerRepository;
     }
 
-    public List<Item> getAllItems() {
-        return repository.findAll();
+    public List<ItemDto> getAllItems() {
+        return itemRepository.findAll().stream()
+                .map(item -> new ItemDto(item.getId(), item.getName(), item.getType(), item.getDescription(), item.getContainer() != null ? item.getContainer().getId() : null))
+                .collect(Collectors.toList());
     }
 
-    public Optional<Item> getById(Long id) {
-        return repository.findById(id);
+    public Optional<ItemDto> getItemById(Long id) {
+        return itemRepository.findById(id)
+                .map(item -> new ItemDto(item.getId(), item.getName(), item.getType(), item.getDescription(), item.getContainer() != null ? item.getContainer().getId() : null));
     }
 
-    public List<Item> search(String name) {
-        return repository.findByNameContains(name);
-    }
+    @Transactional
+    public ItemDto createItem(ItemDto itemDto) {
+        Item item = new Item();
+        item.setName(itemDto.name());
+        item.setType(itemDto.type());
+        item.setDescription(itemDto.description());
 
-    public Item create(Item item) {
-        return repository.save(item);
-    }
-
-    public Item update(Long id, Item item) {
-        Optional<Item> existingItemOptional = repository.findById(id);
-        if (existingItemOptional.isEmpty()) {
-            throw new IllegalArgumentException("An item with an ID " + id + " not found.");
+        if (itemDto.containerId() != null) {
+            Container container = containerRepository.findById(itemDto.containerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Container not found with id " + itemDto.containerId()));
+            item.setContainer(container);
         }
-        item.setId(id);
-        return repository.save(item);
+
+        Item savedItem = itemRepository.save(item);
+        return new ItemDto(savedItem.getId(), savedItem.getName(), savedItem.getType(), savedItem.getDescription(), savedItem.getContainer() != null ? savedItem.getContainer().getId() : null);
     }
 
-    public void delete(Long id) {
-        repository.deleteById(id);
+    @Transactional
+    public ItemDto updateItem(Long id, ItemDto updatedItemDto) {
+        return itemRepository.findById(id)
+                .map(item -> {
+                    item.setName(updatedItemDto.name());
+                    item.setType(updatedItemDto.type());
+                    item.setDescription(updatedItemDto.description());
+
+                    if (updatedItemDto.containerId() != null) {
+                        Container container = containerRepository.findById(updatedItemDto.containerId())
+                                .orElseThrow(() -> new IllegalArgumentException("Container not found with id " + updatedItemDto.containerId()));
+                        item.setContainer(container);
+                    } else {
+                        item.setContainer(null);
+                    }
+
+                    Item updatedItem = itemRepository.save(item);
+                    return new ItemDto(updatedItem.getId(), updatedItem.getName(), updatedItem.getType(), updatedItem.getDescription(), updatedItem.getContainer() != null ? updatedItem.getContainer().getId() : null);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Item not found with id " + id));
     }
 
-    public List<ItemResult> getResults(String name) {
-        return search(name).stream().map(item -> {
-            Container container = item.getContainer();
-
-            ContainerDto cd = null;
-            if (container != null) {
-
-                cd = new ContainerDto(container.getId(), container.getName(), container.getColor(), container.getDescription());
-            }
-
-            return new ItemResult(item.getName(), cd);
-        }).collect(Collectors.toList());
+    @Transactional
+    public void deleteItem(Long id) {
+        itemRepository.deleteById(id);
     }
 }

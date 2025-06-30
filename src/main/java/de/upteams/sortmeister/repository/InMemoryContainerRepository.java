@@ -1,7 +1,7 @@
 package de.upteams.sortmeister.repository;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import de.upteams.sortmeister.model.Container;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -18,6 +18,15 @@ public class InMemoryContainerRepository implements ContainerRepository {
     private final AtomicLong idGen = new AtomicLong(1);
 
     public InMemoryContainerRepository() {}
+
+    @PostConstruct
+    public void init() {
+        save(new Container(null, "Paper", "#ADD8E6", "For paper waste."));
+        save(new Container(null, "Plastic", "#FFD700", "For plastic bottles and bags."));
+        save(new Container(null, "Glass", "#90EE90", "For glass bottles."));
+        save(new Container(null, "Organic", "#8B4513", "For food scraps and garden waste."));
+        save(new Container(null, "Metal", "#C0C0C0", "For metal cans and foil."));
+    }
 
     @Override
     public List<Container> findAll() {
@@ -45,7 +54,6 @@ public class InMemoryContainerRepository implements ContainerRepository {
 
     @Override
     public Optional<Container> findByName(String name) {
-
         return map.values().stream()
                 .filter(c -> c.getName().equalsIgnoreCase(name))
                 .findFirst();
@@ -53,7 +61,6 @@ public class InMemoryContainerRepository implements ContainerRepository {
 
     @Override
     public Optional<Container> findByColor(String color) {
-
         return map.values().stream()
                 .filter(c -> c.getColor().equalsIgnoreCase(color))
                 .findFirst();

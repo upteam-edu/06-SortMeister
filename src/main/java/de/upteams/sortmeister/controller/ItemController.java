@@ -1,11 +1,6 @@
 package de.upteams.sortmeister.controller;
 
-import de.upteams.sortmeister.dto.CreateItemRequest;
 import de.upteams.sortmeister.dto.ItemDto;
-import de.upteams.sortmeister.dto.ItemResult;
-import de.upteams.sortmeister.dto.UpdateItemRequest;
-import de.upteams.sortmeister.model.Item;
-import de.upteams.sortmeister.model.Container;
 import de.upteams.sortmeister.service.ItemService;
 import de.upteams.sortmeister.service.ContainerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+
 @Tag(name = "Items", description = "Operations related to waste items")
 @RestController
 @RequestMapping("/api/items")
@@ -30,31 +26,20 @@ import java.util.Optional;
 public class ItemController {
 
     private final ItemService itemService;
-    private final ContainerService containerService;
 
 
     public ItemController(ItemService itemService, ContainerService containerService) {
         this.itemService = itemService;
-        this.containerService = containerService;
+
     }
 
     @Operation(summary = "List all items", description = "Retrieve a list of all waste items")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of items")
     @GetMapping
-    public List<ItemDto> getAll() {
-        return itemService.getAllItems().stream()
-                .map(ItemDto::new)
-                .toList();
+    public List<ItemDto> getAllItems() {
+        return itemService.getAllItems();
     }
 
-    @Operation(summary = "Search items", description = "Search waste items by name")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved search results")
-    @GetMapping("/search")
-    public List<ItemResult> search(
-            @Parameter(description = "Query string for item name search", required = true)
-            @RequestParam String name) {
-        return itemService.getResults(name);
-    }
 
     @Operation(summary = "Get item by ID", description = "Retrieve a specific waste item by its ID")
     @ApiResponses({
@@ -62,15 +47,14 @@ public class ItemController {
             @ApiResponse(responseCode = "404", description = "Item not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDto> getById(
+    public ResponseEntity<ItemDto> getItemById(
             @Parameter(description = "ID of the item to retrieve", required = true)
             @PathVariable Long id) {
 
-
-        Optional<Item> itemOptional = itemService.getById(id);
+        Optional<ItemDto> itemOptional = itemService.getItemById(id);
 
         if (itemOptional.isPresent()) {
-            return ResponseEntity.ok(new ItemDto(itemOptional.get()));
+            return ResponseEntity.ok(itemOptional.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -78,26 +62,16 @@ public class ItemController {
 
     @Operation(summary = "Create new item", description = "Add a new waste item to the system")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Item created successfully"),
+            @ApiResponse(responseCode = "201", description = "Item created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     @PostMapping
-    public ResponseEntity<ItemDto> create(
-                                           @Parameter(description = "Request body for creating a new item", required = true)
-                                           @Valid @RequestBody CreateItemRequest req) {
+    public ResponseEntity<ItemDto> createItem(
+            @Parameter(description = "Request body for creating a new item", required = true)
+            @Valid @RequestBody ItemDto itemDto) {
 
-        Container container = null;
-        if (req.containerId() != null) {
-            Optional<Container> foundContainer = containerService.getById(req.containerId());
-            if (foundContainer.isEmpty()) {
-
-                return ResponseEntity.badRequest().build();
-            }
-            container = foundContainer.get();
-        }
-
-        Item i = itemService.create(new Item(req.name(), container));
-        return ResponseEntity.ok(new ItemDto(i));
+        ItemDto createdItem = itemService.createItem(itemDto);
+        return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Update item", description = "Modify details of an existing waste item")
@@ -107,23 +81,14 @@ public class ItemController {
             @ApiResponse(responseCode = "404", description = "Item not found")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<ItemDto> update(
-                                           @Parameter(description = "ID of the item to update", required = true)
-                                           @PathVariable Long id,
-                                           @Parameter(description = "Request body for updating an item", required = true)
-                                           @Valid @RequestBody UpdateItemRequest req) {
+    public ResponseEntity<ItemDto> updateItem(
+            @Parameter(description = "ID of the item to update", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Request body for updating an item", required = true)
+            @Valid @RequestBody ItemDto itemDto) {
         try {
-            Container container = null;
-            if (req.containerId() != null) {
-                Optional<Container> foundContainer = containerService.getById(req.containerId());
-                if (foundContainer.isEmpty()) {
-                    return ResponseEntity.badRequest().build();
-                }
-                container = foundContainer.get();
-            }
-
-            Item updated = itemService.update(id, new Item(req.name(), container));
-            return ResponseEntity.ok(new ItemDto(updated));
+            ItemDto updatedItem = itemService.updateItem(id, itemDto);
+            return ResponseEntity.ok(updatedItem);
         } catch (IllegalArgumentException e) {
             if (e.getMessage().contains("not found")) {
                 return ResponseEntity.notFound().build();
@@ -138,13 +103,14 @@ public class ItemController {
             @ApiResponse(responseCode = "404", description = "Item not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<Void> deleteItem(
             @Parameter(description = "ID of the item to delete", required = true)
             @PathVariable Long id) {
-        if (itemService.getById(id).isEmpty()) {
+
+        if (itemService.getItemById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        itemService.delete(id);
+        itemService.deleteItem(id);
         return ResponseEntity.noContent().build();
     }
 }

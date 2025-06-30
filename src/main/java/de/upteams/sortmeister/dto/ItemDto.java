@@ -1,21 +1,20 @@
+// src/main/java/de/upteams/sortmeister/dto/ItemDto.java
 package de.upteams.sortmeister.dto;
 
-import de.upteams.sortmeister.model.Item;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-public record ItemDto(Long id, String name, ContainerDto container) {
-    public ItemDto(Item item) {
-        this(
-                item.getId(),
-                item.getName(),
-                // Если у item есть контейнер, создаем ContainerDto, иначе null
-                item.getContainer() != null ?
-                        new ContainerDto(
-                                item.getContainer().getId(),
-                                item.getContainer().getName(),
-                                item.getContainer().getColor(),
-                                item.getContainer().getDescription()
-                        ) :
-                        null
-        );
-    }
+public record ItemDto(
+        Long id,
+        @NotBlank(message = "Name cannot be empty")
+        @Size(max = 255, message = "Name cannot exceed 255 characters")
+        String name,
+        @NotBlank(message = "Type cannot be empty")
+        @Size(max = 255, message = "Type cannot exceed 255 characters")
+        String type,
+        @Size(max = 1000, message = "Description cannot exceed 1000 characters")
+        String description,
+        Long containerId
+) {
+
 }
