@@ -1,9 +1,6 @@
 package de.upteams.sortmeister.controller;
 
-import de.upteams.sortmeister.dto.CreateItemRequest;
-import de.upteams.sortmeister.dto.ItemDto;
-import de.upteams.sortmeister.dto.ItemResult;
-import de.upteams.sortmeister.dto.UpdateItemRequest;
+import de.upteams.sortmeister.dto.*;
 import de.upteams.sortmeister.model.Item;
 import de.upteams.sortmeister.service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +53,17 @@ public class ItemController {
         return service.getById(id)
                 .map(i -> ResponseEntity.ok(new ItemDto(i.getId(), i.getName(), i.getContainerId())))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Get extended item by ID", description = "Retrieve a specific waste item by its ID and additional info about container")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Item found"),
+            @ApiResponse(responseCode = "404", description = "Item not found")
+    })
+    @GetMapping("/extended/{id}")
+    public ResponseEntity<ExtendedItemDto> getExtededById(@PathVariable Long id) {
+        ExtendedItemDto dto =  service.getExtededItemById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Create new item", description = "Add a new waste item to the system")
