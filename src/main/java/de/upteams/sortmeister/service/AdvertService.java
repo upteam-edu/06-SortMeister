@@ -2,43 +2,43 @@ package de.upteams.sortmeister.service;
 
 import de.upteams.sortmeister.dto.AdvertDto;
 import de.upteams.sortmeister.dto.CreateAdvertRequest;
+import de.upteams.sortmeister.repository.AdvertRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdvertService {
-    private final Map<Long, AdvertDto> adverts = new HashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private final AdvertRepository repository;
+
+    public AdvertService(AdvertRepository repository) {
+        this.repository = repository;
+    }
 
     public List<AdvertDto> findAll() {
-        return new ArrayList<>(adverts.values());
+        return repository.findAll();
     }
 
     public Optional<AdvertDto> findById(Long id) {
-        return Optional.ofNullable(adverts.get(id));
+        return repository.findById(id);
     }
 
     public AdvertDto create(CreateAdvertRequest request) {
-        Long id = idGenerator.getAndIncrement();
-        AdvertDto advert = new AdvertDto(id, request.getTitle(), request.getDescription(), request.getPhoto());
-        adverts.put(id, advert);
-        return advert;
+        AdvertDto advert = new AdvertDto(null, request.getTitle(), request.getDescription(), request.getPhoto());
+        return repository.save(advert);
     }
 
     public Optional<AdvertDto> update(Long id, CreateAdvertRequest request) {
-        AdvertDto advert = adverts.get(id);
-        if (advert == null) {
-            return Optional.empty();
-        }
+        Optional<AdvertDto> existing = repository.findById(id);
+        if (existing.isEmpty()) return Optional.empty();
+        AdvertDto advert = existing.get();
         advert.setTitle(request.getTitle());
         advert.setDescription(request.getDescription());
         advert.setPhoto(request.getPhoto());
-        return Optional.of(advert);
+        return Optional.of(repository.save(advert));
     }
 
     public boolean delete(Long id) {
-        return adverts.remove(id) != null;
+        return repository.deleteById(id);
     }
 } 
