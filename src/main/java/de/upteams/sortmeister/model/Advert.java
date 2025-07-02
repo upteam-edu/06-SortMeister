@@ -18,7 +18,7 @@ public class Advert {
     @Column(length = 1000)
     private String description;
 
-    @Column
+    @Column(nullable = true)
     private String photoUrl;
 
     public Advert() {
